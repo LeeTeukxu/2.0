@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.TZSEmailRecordMapper">
+    <select id="getAll" resultType="map">
+       select TONGZHISBH as Code,Count(0) as Num from TZSEmailRecord Where TONGZHISBH in
+        <foreach collection="list" index="index" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+        group by TONGZHISBH
+    </select>
+</mapper>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.JGDateMemoMapper">
+    <select id="getAllByIds" resultType="com.zhide.dtsystem.models.JGDateMemo">
+        Select convert(varchar,ID) as mid,CasesSubID,CreateMan,CreateTime as CreateDate,Memo
+        from JGDateMemo Where CASESSUBID in
+        <foreach collection="list" index="index" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

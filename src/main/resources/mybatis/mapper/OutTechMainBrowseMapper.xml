@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.OutTechMainBrowseMapper">
+    <select id="getData" resultType="map">
+        Select * from (select *,row_number() over(ORDER  by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum
+        from
+        (
+          Select * from View_OutTechMainBrowse Where 1=1
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+                <choose>
+                    <when test="RoleName.equals('技术部门经理')">
+                        and MasterTechMan in(select UserID from tbLoginUser Where DepID in(Select Value from
+                        ManagerPermission
+                        Where UserID=#{UserID} And Type='Dep')  Union Select ${UserID} )
+                    </when>
+                    <when test="RoleName.equals('技术人员')">
+                        and MasterTechMan=#{UserID}
+                    </when>
+                    <otherwise>
+                        and (isnull(TechMan,0)=0 or isnull(TechMan,0)=#{UserID} OR CreateMan=#{UserID} )
+                    </otherwise>
+                </choose>
+            </if>
+        )t
+        <where>
+            1=1
+            <if test="State!='' and State!=null">
+                And State=#{State}
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+    <select id="getStateNumbers" resultType="map" >
+        SELECT [State],Count(0) as Num
+        FROM [View_OutTechMainBrowse]  Where 1=1
+        <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+            <choose>
+                <when test="RoleName.equals('技术部门经理')">
+                    and MasterTechMan in(select UserID from tbLoginUser Where DepID in(Select Value from
+                    ManagerPermission
+                    Where UserID=#{UserID} And Type='Dep')  Union Select ${UserID} )
+                </when>
+                <when test="RoleName.equals('技术人员')">
+                    and MasterTechMan=#{UserID}
+                </when>
+                <otherwise>
+                    and (isnull(TechMan,0)=0 or isnull(TechMan,0)=#{UserID} OR CreateMan=#{UserID} )
+                </otherwise>
+            </choose>
+        </if>
+        Group by State
+    </select>
+</mapper>

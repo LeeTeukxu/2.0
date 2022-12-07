@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.AllUsersListMapper">
+    <select id="getNumByAccount" parameterType="java.lang.String" resultType="int">
+        Select Count(0) from DTSystem.dbo.AllUsersList Where Account=#{account}
+    </select>
+    <insert id="addLoginUserInfo" useGeneratedKeys="true" keyProperty="id" parameterType="com.zhide.dtsystem.models.allUsersList">
+        insert into DTSystem.dbo.AllUsersList(Account,CompanyID,CreateTime) values(#{account},#{companyID},getDate())
+    </insert>
+    <delete id="deleteLoginUser" parameterType="java.lang.String">
+        delete from DTSystem.dbo.AllUsersList Where Account=#{Account}
+    </delete>
+</mapper>

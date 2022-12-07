@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.CasesTechBrowseNewMapper">
+    <select id="getData" resultType="map">
+        Select * from (select *,row_number() over(ORDER by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as
+        _TotalNum
+        from View_CasesTechBrowse
+        <where>
+            1=1
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+                And SubID in(Select Distinct SubID from dbo.getCasesUser(#{UserID},#{RoleName}))
+            </if>
+            <if test="State!=null and State!=''">
+                <if test="State!='90'">
+                    And State=#{State}
+                </if>
+            </if>
+            <if test="CasesID!=null and CasesID!=''">
+                And CasesID=#{CasesID}
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>
+        )t Where RowNum BETWEEN #{Begin} And #{End}
+    </select>
+    <select id="getWaitReport" resultType="map">
+        Select Man as Name, Sum(Num) as Num
+        from (Select a.Man, a.Num * (isnull(b.WorkDays, 1)) as Num
+              from (Select Count(0) as Num, Man, rtrim(ltrim(YName)) as YName
+                    from View_XCasesDetail
+                    Where Type = #{Type}
+                      And ProcessState = #{State}
+                      And dbo.Auth_Tech(CasesID, SubID, ProcessState,
+                                        #{UserID}, #{RoleName}) = 1
+                    group by Man, YName) a
+                       inner join ProductItemType b on a.YName = b.Name) a
+        group by Man
+        Order by ${sortField} ${sortOrder}
+    </select>
+    <select id="getClientReport" resultType="map">
+        SELECT TOP(100) PERCENT COUNT(0) AS Num, dbo.tbClient.Name
+        FROM dbo.CasesSub INNER JOIN
+            dbo.CasesMain
+        ON dbo.CasesSub.CasesID = dbo.CasesMain.CasesID INNER JOIN
+            dbo.tbClient ON dbo.CasesMain.ClientID = dbo.tbClient.ClientID
+        WHERE (dbo.CasesSub.ProcessState=62)
+          AND (dbo.Auth_Tech(dbo.CasesSub.CasesID
+            , dbo.CasesSub.SubID
+            , dbo.CasesMain.State
+            , #{UserID}
+            , #{RoleName}) = 1)
+          AND (dbo.CasesSub.ClientSetTime >=#{Begin})
+          AND
+            (dbo.CasesSub.ClientSetTime &lt;=#{End})
+          And dbo.tbClient.Name in (${Names})
+        GROUP BY dbo.tbClient.Name
+        ORDER BY ${sortField} ${sortOrder}
+    </select>
+    <select id="getReportColumns" resultType="String">
+        Select distinct YName
+        from (Select rtrim(ltrim(YName)) as YName
+              from View_XCasesDetail
+              Where Type = #{Type}
+                And ProcessState = #{State}
+                And dbo.Auth_Tech(CasesID, SubID, ProcessState, #{UserID}, #{RoleName}) = 1) a
+    </select>
+    <select id="getWaitDetail" resultType="map">
+        Select a.Man as Name, a.YName, a.Num * (isnull(b.WorkDays, 1)) as Num
+        from (Select Count(0) as Num, Man, rtrim(ltrim(YName)) as YName
+              from View_XCasesDetail
+              Where Type = #{Type}
+                And ProcessState = #{State}
+                And dbo.Auth_Tech(CasesID, SubID, ProcessState, #{UserID}, #{RoleName}) = 1
+              group by Man, YName) a
+                 inner join ProductItemType b on a.YName = b.Name
+    </select>
+    <select id="getOutTechDetail" resultType="map">
+        Select Man as Name, convert(int, OutTech) as OutTech, Sum(Num) as Num
+        from (Select a.Man, a.OutTech, a.Num * (isnull(b.WorkDays, 1)) as Num
+              from (Select Count(0) as Num, Man, OutTech, rtrim(ltrim(YName)) as YName
+                    from View_XCasesDetail
+                    Where Type = #{Type}
+                      And ProcessState = #{State}
+                      And dbo.Auth_Tech(CasesID, SubID, ProcessState, #{UserID}, #{RoleName}) = 1
+                    group by Man, OutTech, YName) a
+                       inner join ProductItemType b on a.YName = b.Name) a
+        group by Man, OutTech
+    </select>
+    <select id="getWorkDays" resultType="map">
+        Select TechMan,
+        <foreach collection="Items"  separator=" , " item="item">
+            Sum(IIF(YearMonth='${item}',WorkDays,0)) as '${item}'
+        </foreach>
+        from
+        (   Select TechMan,Sum(WorkDays) as WorkDays,YearMonth from
+            (
+                SELECT TechMan,WorkDays,YearMonth from View_WorkDays
+                <where>
+                    1=1
+                    <if test="Begin!=null and Begin!=''">
+                      And  WorkTime >=#{Begin}
+                    </if>
+                    <if test="End!=null and  End!=''">
+                       And  WorkTime &lt;=#{End}
+                    </if>
+                </where>
+            ) a GROUP BY TechMan, YearMonth
+        ) t Group by TechMan
+    </select>
+</mapper>

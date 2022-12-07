@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.TradeCasesTechBrowseMapper">
+    <select id="getData" resultType="map">
+        Select * from (
+        select *,row_number() over(ORDER  by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum
+        from View_TradeCasesTechBrowse
+        <where>
+            1=1 and dbo.fn_Auth_TradeCasesTech(#{UserID},#{RoleName},CreateMan,CreateManager)=1
+            <if test="State!=null and State!=''">
+                <if test="State==5">
+                    And (State =5)
+                </if>
+                <if test="State==6">
+                    And (State =6)
+                </if>
+                <if test="State==7">
+                    And (State =5 Or State=6)
+                </if>
+            </if>
+            <if test="CasesID!=null and CasesID!=''">
+                And CasesID=#{CasesID}
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+</mapper>

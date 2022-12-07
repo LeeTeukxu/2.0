@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.CasesMemoMapper">
+    <select id="getAllByIds" resultType="com.zhide.dtsystem.models.v_PantentInfoMemo">
+        Select convert(varchar,ID) as mid,CasesID as SHENQINGH,CreateManName,CreateTime as CreateDate,
+        UpdateManName,UpdateTime as UpdateDate,Memo
+        from v_CasesMemo Where CasesID in
+        <foreach collection="list" index="index" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

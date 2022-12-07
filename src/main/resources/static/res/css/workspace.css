@@ -1,0 +1,769 @@
+/* @update: 208-11-12 10:54:25 */
+@charset "UTF-8";
+
+a:hover {
+    text-decoration: none;
+}
+
+.tj_link:hover .dashboard-stat2 {
+    border: 2px solid red !important;
+}
+
+ul li {
+    list-style: none;
+    text-align: center;
+}
+
+#loading {
+    z-index: 100;
+    vertical-align: middle;
+    font-size: 11px;
+    display: none;
+}
+
+ul, li, dl, dt, dd, img, input, h3, h4 {
+    margin: 0;
+    padding: 0;
+}
+
+.right_side {
+    width: 205px;
+    float: right;
+    margin: 0px 0px 0 0;
+}
+
+.right_side dt {
+    background: #287fb0;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    height: 38px;
+    line-height: 38px;
+}
+
+font[Attributes] Style
+{
+    color: rgb(255, 0, 0)
+;
+}
+.right_side dd {
+    overflow: hidden;
+}
+
+.right_side dd {
+    border: 1px solid #d4d4d4;
+    border-top: none;
+    background: #fff;
+}
+
+.indicators a {
+    display: block;
+    height: 40px;
+    line-height: 40px;
+    border-top: 1px dashed #ddd;
+    margin-top: -1px;
+    padding: 0 10px;
+    color: #666;
+}
+
+.left_side {
+    margin: 0 223px 0 0px;
+    padding-top: 0px;
+}
+
+.count {
+    overflow: hidden;
+}
+
+.count li {
+    width: 25%;
+    float: left;
+}
+
+.count li dl {
+    margin-right: 11px;
+    border: 4px solid #fff;
+    background: #e2f0ff;
+}
+
+.count li dt {
+    border-bottom: 1px dashed #ccc;
+    padding: 0 12px;
+    height: 50px;
+    line-height: 50px;
+}
+
+.count li dd {
+    padding: 0 12px;
+    height: 138px;
+}
+
+.count li dt a {
+    color: #09318a;
+}
+
+.count li dl a {
+    display: block;
+}
+
+.count li dd a {
+    color: #666;
+    height: 32px;
+    line-height: 32px;
+}
+
+.count li dl a span {
+    float: right;
+}
+
+.worktable {
+    border: 1px solid #ccc;
+    margin: 13px 13px 0 4px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.worktable a {
+    border: 1px dashed #ccc;
+    border-bottom: 0;
+    border-right: 0;
+    margin: -1px 0 0 -1px;
+    width: 25%;
+    float: left;
+    text-align: center;
+    font-size: 20px;
+}
+
+.worktable a em.work_1 {
+    background-position: center -80px;
+}
+
+.worktable a em.work_8 {
+    background-position: center -516px;
+}
+
+.worktable a em.work_3 {
+    background-position: center -945px;
+}
+
+.worktable a em.work_2 {
+    background-position: center -1383px;
+}
+
+.worktable a em.work_5 {
+    background-position: center -1822px;
+}
+
+.worktable a em.work_6 {
+    background-position: center -2260px;
+}
+
+.worktable a em.work_7 {
+    background-position: center -2700px;
+}
+
+.worktable a em.work_4 {
+    background-position: center -3126px;
+}
+
+a.view_3 {
+    background-position: center -3610px;
+}
+
+a.view_1 {
+    background-position: center -4020px;
+}
+
+a.view_2 {
+    background-position: center -4435px;
+}
+
+a.view_4 {
+    background-position: center -4845px;
+}
+
+.d-sousuo {
+    background: linear-gradient(to right, #638AD2, #C27FF5);
+    height: 80px;
+    padding: 16px 20px;
+    box-shadow: 0px 5px 8px 0px rgba(56, 73, 199, 0.44);
+}
+
+.d-inputs {
+    width: 100%;
+    padding: 0 24px;
+    height: 44px;
+    line-height: 44px;
+    border: none;
+    border-radius: 4px 0 0 4px !important;
+}
+
+.d-sou {
+    width: 100%;
+    text-align: center;
+    height: 44px;
+    line-height: 44px;
+    background: #E7505A;
+    color: #FFFFFF;
+    display: inline-block;
+    border-radius: 0 4px 4px 0 !important;
+}
+
+.d-sou1 {
+    background: #145DE4;
+}
+
+.d-sou:hover {
+    color: #FFFFFF;
+}
+
+.d-sour {
+    color: #FFFFFF;
+    display: inline-block;
+    padding-top: 25px;
+}
+
+.d-sour:hover {
+    color: #f9fe69;
+    text-decoration: underline;
+}
+
+.d-mine {
+    margin-top: 15px;
+}
+
+.d-min1 {
+    background: #FFFFFF;
+    border-radius: 4px !important;
+}
+
+.d-min1 h3 {
+    padding: 17px 0;
+}
+
+.d-row {
+    padding-bottom: 35px;
+}
+
+.d-row li {
+    text-align: center;
+    padding: 0 5px;
+}
+
+.d-row li:hover a {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+}
+
+.d-row li a {
+    -webkit-transition: all 0.2s;
+    transition: all 0.2s;
+    border-radius: 5px;
+    position: relative;
+    border: solid 1px #DDDDDD;
+    padding: 22px 0 17px 0;
+    display: block;
+    box-shadow: 0px 3px 8px 1px rgba(70, 70, 70, 0.16);
+    border-radius: 4px !important;
+}
+
+.d-row li a span {
+    display: block;
+    padding-top: 20px;
+    font-size: 14px;
+    color: #333333;
+}
+
+.d-wo {
+    background: #FFFFFF;
+    padding: 16px 30px;
+    height: 155px;
+    box-shadow: 0px 3px 9px 1px rgba(16, 16, 16, 0.15);
+    border-radius: 4px 4px 0 0 !important;
+}
+
+.d-wospan {
+    float: left;
+    margin-left: 20px;
+    width: 60%;
+}
+
+.d-wosa2 {
+    border-radius: 12px !important;
+    float: right;
+    color: #FFFFFF;
+    display: inline-block;
+    background: #E7505A;
+    line-height: 24px;
+    padding: 0 18px;
+}
+
+.d-wosa2:hover {
+    color: #FFFFFF;
+}
+
+.d-quan span b {
+    font-size: 18px;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+.d-quan a {
+    color: #FFFFFF;
+    display: block;
+    height: 100px;
+}
+
+.d-quan a:hover {
+    color: #FFFFFF;
+    background-color: #0078F0;
+}
+
+.d-quan a:hover span b {
+    color: #F8FF44;
+}
+
+.d-quan font {
+    text-align: center;
+    display: block;
+    font-size: 14px;
+    color: #FFFFFF;
+}
+
+.d-mimi {
+    padding-top: 24px;
+}
+
+.d-mimi li b {
+    text-align: left;
+    display: block;
+    font-size: 20px;
+}
+
+.d-mimi li:hover {
+    background-color: #FAE9E6;
+    color: #E7505A;
+}
+
+.d-file {
+}
+
+.d-Administration {
+}
+
+.file-con {
+    height: 265px;
+    background: #ffffff;
+}
+
+.d-Administration {
+    background: #ffffff;
+    padding: 10px 16px 0 16px;
+    margin-top: 13px;
+}
+
+.d-Administration ul li {
+}
+
+.administration-list {
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 20%;
+}
+
+.administration-box {
+    width: 100%;
+    height: 207px;
+    background-color: rgba(255, 242, 234, 1);
+    margin-bottom: 20px;
+    border-radius: 4px !important;
+    position: relative;
+}
+
+.advantage-bottom {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: -5px;
+    border-radius: 4px !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0px 2px 8px 1px rgba(0, 0, 0, 0.23) !important;
+    color: #333333;
+    height: 70px;
+    overflow: hidden;
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+h1, h2, h3 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.advantage-bottom h1 {
+
+    text-align: center;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 70px;
+}
+
+.advantage-bottom ul li {
+    width: 33.33%;
+    float: left;
+    text-align: center;
+}
+
+.administration-box:hover .advantage-bottom {
+    height: 212px;
+    width: 100%;
+    left: 0px;
+    right: 0px;
+}
+
+.administration-box:hover .advantage-bottom h1 {
+
+    background: rgba(231, 80, 90, 1);
+    border-radius: 4px !important;
+    color: #FFFFFF;
+    line-height: 54px;
+    font-size: 24px;
+    height: 54px;
+}
+
+.d-igig1:hover .advantage-bottom h1 {
+    background: #F28656;
+}
+
+.d-igig2:hover .advantage-bottom h1 {
+    background: #79A3F1;
+}
+
+.d-igig3:hover .advantage-bottom h1 {
+    background: #F46798;
+}
+
+.d-igig4:hover .advantage-bottom h1 {
+    background: #4AB0ED;
+}
+
+.d-igig5:hover .advantage-bottom h1 {
+    background: #EFB94D;
+}
+
+.d-igig6:hover .advantage-bottom h1 {
+    background: #FA536B;
+}
+
+.d-igig7:hover .advantage-bottom h1 {
+    background: #3AC63D;
+}
+
+.d-igig8:hover .advantage-bottom h1 {
+    background: #B37AF3;
+}
+
+.d-igig9:hover .advantage-bottom h1 {
+    background: #6C80F6;
+}
+
+.d-igig10:hover .advantage-bottom h1 {
+    background: #F95DBE;
+}
+
+.d-file {
+    margin-top: 8px;
+    position: relative;
+}
+
+
+.d-file .file-list {
+    background: #ffffff;
+    margin-bottom: 1px;
+    width: 100%;
+    height: 132px;
+}
+
+.file-list .img-box {
+    width: 150px;
+    height: 132px;
+}
+
+.file-box-left {
+    float: left;
+    height: 90px;
+    text-align: center;
+}
+
+.file-box-right {
+    width: 61px;
+    float: left;
+}
+
+.left {
+    float: left;
+}
+
+.file-box-left h1 {
+    font-size: 36px;
+    line-height: 36px;
+    font-weight: 400;
+    margin-top: 20px;
+}
+
+.file-box-left h2 {
+    font-size: 16px;
+    line-height: 26px;
+
+}
+
+.file-box-left a {
+    color: #333333;
+}
+
+.file-box-left h2 {
+    font-weight: 400;
+}
+
+.file-box-left h3 {
+    display: none;
+    width: 65px;
+    color: #ffffff;
+    background: rgba(231, 80, 90, 1);
+    font-size: 14px;
+    height: 22px;
+    line-height: 22px;
+    border-radius: 2px !important;
+    margin: 0 auto;
+}
+
+.file-box:hover .file-box-left h3 {
+    display: block;
+}
+
+.file-box-left:hover {
+    background: rgba(250, 233, 230, 1);
+}
+
+.file-box-left:hover a {
+    color: rgba(231, 80, 90, 1);
+}
+
+.file-two .file-box-left h3 {
+    background: rgba(63, 112, 234, 1);
+}
+
+.file-two .file-box-left:hover {
+    background: rgba(238, 243, 255, 1);
+}
+
+.file-two .file-box-left:hover a {
+    color: rgba(63, 112, 234, 1);
+}
+
+.file-box-right {
+    margin-top: 52px;
+    width: 22px;
+}
+
+.dropdown-menu li {
+    text-align: left;
+}
+
+.file-box {
+    width: 200px;
+}
+
+.file-box-left h1 {
+    font-size: 30px;
+}
+
+.file-box-left {
+    width: 84%;
+}
+
+.file-box-left h2 {
+    font-size: 14px;
+}
+
+@media screen and (min-width: 1920px) {
+    /*当屏幕尺寸大于1920px时，应用下面的CSS样式*/
+    .file-box {
+        width: 11.3%;
+    }
+
+    .file-box-left h1 {
+        font-size: 30px;
+    }
+
+    .file-box-left {
+        width: 84%;
+    }
+
+    .file-box-left h2 {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 1600px) {
+    /*当屏幕尺寸小于1600px时，应用下面的CSS样式*/
+    .file-box {
+        width: 10.9%;
+    }
+
+    .file-box-left h1 {
+        font-size: 30px;
+    }
+
+    .file-box-left {
+        width: 84%;
+    }
+
+    .file-box-left h2 {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 1500px) {
+    /*当屏幕尺寸小于1500px时，应用下面的CSS样式*/
+    .file-box {
+        width: 10.9%;
+    }
+
+    .file-box-left h1 {
+        font-size: 30px;
+    }
+
+    .file-box-left {
+        width: 80%;
+    }
+
+    .file-box-left h2 {
+        font-size: 14px;
+    }
+}
+
+.advantage-bottom ul li a {
+    color: #333333;
+}
+
+.advantage-bottom ul li a:hover {
+    color: #2692E6;
+}
+
+.advantage-bottom ul.list-one li {
+    width: 100%;
+    height: 248px;
+    font-size: 16px;
+    color: rgba(51, 51, 51, 1);
+}
+
+.advantage-bottom ul.list-one li a {
+    display: block;
+    padding-top: 90px;
+    height: 158px;
+}
+
+.advantage-bottom ul.list-two li {
+    width: 50%;
+    height: 248px;
+    font-size: 16px;
+    color: rgba(51, 51, 51, 1);
+}
+
+.advantage-bottom ul.list-two li a {
+    display: block;
+    padding-top: 90px;
+    height: 158px;
+}
+
+.list-three li {
+    height: 248px;
+    font-size: 16px;
+    color: rgba(51, 51, 51, 1);
+    border-right: 1px solid #CCCCCC;
+}
+
+.advantage-bottom ul.list-three li a {
+    display: block;
+    padding-top: 90px;
+    height: 158px;
+}
+
+.advantage-bottom ul.list-four li {
+    height: 80px;
+    font-size: 16px;
+    color: rgba(51, 51, 51, 1);
+    border-bottom: 1px solid #CCCCCC;
+    border-right: 1px solid #CCCCCC;
+    width: 50%;
+}
+
+.advantage-bottom ul.list-four li a {
+    display: block;
+    padding-top: 50px;
+    height: 30px;
+}
+
+.list-five li {
+    height: 80px;
+    font-size: 16px;
+    color: rgba(51, 51, 51, 1);
+    border-bottom: 1px solid #CCCCCC;
+    border-right: 1px solid #CCCCCC;
+
+}
+
+.advantage-bottom ul.list-five li a {
+    display: block;
+    padding-top: 50px;
+    height: 30px;
+}
+
+.advantage-bottom ul li:hover {
+    background-color: rgba(207, 234, 255, 1);
+}
+
+.d-am1:hover span {
+    color: #E8505A;
+    background: #ffe7e9;
+}
+
+.d-am2:hover span {
+    color: #3F70EA;
+    background: #EEF3FF;
+}
+
+.nones {
+    background: #E7505A;
+    color: #FFFFFF;
+}
+
+.nones:hover {
+    background: #D22B36;
+    color: #FFFFFF;
+}
+
+.d_mum {
+    display: inline-block;
+    color: #E8505A;
+    border: solid 1px #E8505A;
+    padding: 0 12px;
+    border-radius: 10px !important;
+    margin-top: 10px;
+}
+
+.d_mum:hover {
+    background: #E8505A;
+    color: #FFFFFF;
+}
+
+.d_bigbu_img {
+    top: 50%;
+    position: fixed;
+    left: 50%;
+    width: 128px;
+    height: 128px;
+    margin-left: -64px;
+    margin-top: -64px;
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.caseHighCounterMapper">
+    <select id="getMain" resultType="com.zhide.dtsystem.models.caseCounterInfo">
+        Select CasesID,null as SubID,State, createMan,createManager,AuditMan,AuditManager,TechMan,TechManager from
+        CaseHighMain
+    </select>
+
+    <select id="getSub" resultType="com.zhide.dtsystem.models.caseCounterInfo">
+        Select a.CasesID,a.SubID,a.ProcessState as
+        State,b.CreateMan,b.CreateManager,b.AuditMan,b.AuditManager,a.TechMan,a.TechManager
+        from CaseHighSub  a inner join CaseHighMain b on a.CasesID=b.CasesID Where CanUse=1 And isnull(State,0)>0
+    </select>
+</mapper>

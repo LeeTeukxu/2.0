@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.AllUserListMapper">
+    <resultMap id="loginUserInfo" type="com.zhide.dtsystem.models.LoginUserInfo">
+        <result column="UserID" property="userId"/>
+        <result column="UserName" property="userName"/>
+        <result column="DepID" property="depId"/>
+        <result column="DepName" property="depName"/>
+        <result column="LoginCode" property="account"/>
+        <result column="Password" property="password"/>
+        <result column="CompanyID" property="companyId"/>
+        <result column="CompanyName" property="companyName"/>
+        <result column="RoleName" property="roleName"/>
+        <result column="RoleID" property="roleId"/>
+        <result column="CanLogin" property="canLogin"/>
+    </resultMap>
+    <select id="findUserInfoByAccountAndCompanyID" resultType="loginUserInfo">
+        Select a.RoleID,
+               d.RoleName,
+               a.LoginCode as Account,
+               a.Password,
+               a.DepID,
+               a.UserID    as UserID,
+               b.Name      as
+                              DepName,
+               a.canLogin,
+               c.EmpName   as
+                              UserName,
+               ''          as CompanyID,
+               (Select top 1 Name from ${CompanyID}.dbo.CompanyConfig)
+                           as CompanyName
+        from ${CompanyID}.dbo.tbLoginUser a
+                 inner join ${CompanyID}.dbo.tbDepList b on a.DepID = b.DepID
+                 inner join ${CompanyID}.dbo.tbEmployee c on a.EmpID = c.EmpID
+                 inner join ${CompanyID}.dbo.tbRoleClass d on a.RoleID = d.RoleID
+        Where a.LoginCode = #{account}
+    </select>
+    <select id="findAllUserInfo" resultType="loginUserInfo">
+        Select a.RoleID,
+               d.RoleName,
+               a.LoginCode as Account,
+               a.Password,
+               a.DepID,
+               a.UserID    as UserID,
+               b.Name      as DepName,
+               a.canLogin,
+               c.EmpName   as UserName,
+               ''          as CompanyID,
+               (Select top 1 Name from dbo.CompanyConfig)
+                           as CompanyName
+        from dbo.tbLoginUser a
+                 inner join dbo.tbDepList b on a.DepID = b.DepID
+                 inner join dbo.tbEmployee c on a.EmpID = c.EmpID
+                 inner join dbo.tbRoleClass d on a.RoleID = d.RoleID
+    </select>
+
+    <select id="getNumByAccount" parameterType="java.lang.String" resultType="int">
+        Select Count(0)
+        from dbo.DTSystem.AllUsersList
+        Where Account = #{account}
+    </select>
+    <select id="addAccountInfo" parameterType="com.zhide.dtsystem.models.allUsersList" resultType="int">
+        insert into DTSystem.dbo.AllUsersList(Account, CompanyID, CreateTime)
+        values (#{account}, #{companyID}, getDate())
+    </select>
+    <select id="getAllEmailUser" resultType="map">
+        Select * from (
+        select EmpName as UserName,RoleName,Email,DepName,row_number() over(ORDER by ${sortField} ${sortOrder}) as
+        RowNum,Count(1) over() as _TotalNum
+        from v_LoginUser
+        <where>
+            len(isnull(Email,''))>5
+            <if test="EmpName!=null and EmpName!=''">
+                and EmpName like #{EmpName}
+            </if>
+        </where>
+        )t Where RowNum BETWEEN #{Begin} And #{End}
+    </select>
+    <select id="getAll" resultType="loginUserInfo">
+        Select RoleID,
+               RoleName,
+               LoginCode as Account,
+               DepID,
+               UserID,
+               DepName,
+               CanLogin,
+               EmpName   as UserName
+        from v_LoginUser
+        Where isnull(CanLogin, 0) = 1
+    </select>
+</mapper>

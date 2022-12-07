@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.ViewPatentInfoMapper">
+    <select id="getData" resultType="map">
+       Select * from (
+       select *,row_number() over(ORDER  by ${sortField} ${sortOrder}) as RowNum,Count(*) over() as _TotalNum
+        from view_PantentAll
+        <where>
+            1=1
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+              And  SHENQINGH in (Select Code from fn_auth_shenqingh(#{DepID},#{UserID},#{RoleName}))
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+    <select id="getWatchData" resultType="map">
+        Select * from (
+        select *,row_number() over(ORDER  by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum
+        from view_PantentAll
+        <where>
+            shenqingh is not null And SHENQINGR is not null
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+                And  SHENQINGH in (Select Code from fn_auth_shenqingh(#{DepID},#{UserID},#{RoleName}))
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+    <select id="getSubFileAndOutFile"  resultType="map">
+        SELECT SubID,AttID,Type FROM CasesSubFiles
+            <if test="ids!=null and ids.size()>0">
+                WHERE SubID in
+                <foreach collection="ids" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+        UNION
+        SELECT SubID,AttID,Type FROM CasesOutSourceFile
+            <if test="ids!=null and ids.size()>0">
+                WHERE SubID in
+                <foreach collection="ids" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+    </select>
+</mapper>

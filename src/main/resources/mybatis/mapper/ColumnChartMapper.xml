@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.ColumnChartMapper">
+    <select id="getName" resultType="map">
+        Select Man as name, Sum(Num) as Num
+        from (Select a.Man, a.Num * (isnull(b.WorkDays, 1)) as Num
+              from (Select Count(0) as Num, Man, rtrim(ltrim(YName)) as YName
+                    from View_XCasesDetail
+                    Where Type = #{Type}
+                      And ProcessState = #{State}
+                      And dbo.Auth_Tech(CasesID, SubID, ProcessState,
+                                        #{UserID}, #{RoleName}) = 1
+                    group by Man, YName) a
+                       inner join ProductItemType b on a.YName = b.Name) a
+        group by Man
+        Order by ${sortField} ${sortOrder}
+    </select>
+    <select id="getReportColumns" resultType="String">
+        Select distinct YName
+        from (Select rtrim(ltrim(YName)) as YName
+              from View_XCasesDetail
+              Where Type = #{Type}
+                And ProcessState = #{State}
+                And dbo.Auth_Tech(CasesID, SubID, ProcessState, #{UserID}, #{RoleName}) = 1) a
+    </select>
+    <select id="getWaitDetail" resultType="map">
+        Select a.Man as name, a.YName, a.Num * (isnull(b.WorkDays, 1)) as Num, SignTime
+        from (Select Count(0) as Num, Man, rtrim(ltrim(YName)) as YName, SignTime
+              from View_XCasesDetail
+              Where Type = #{Type}
+                And ProcessState = #{State}
+                And dbo.Auth_Tech(CasesID, SubID, ProcessState, #{UserID}, #{RoleName}) = 1
+              group by Man, YName, SignTime) a
+                 inner join ProductItemType b on a.YName = b.Name
+        <where>
+            1=1
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>
+    </select>
+</mapper>

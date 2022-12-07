@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.TradeCasesConfirmBrowseMapper">
+    <select id="getData" resultType="map">
+        Select * from (
+        select *,row_number() over(ORDER  by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum
+        from View_TradeCasesBrowse
+        <where>
+            1=1 and
+            dbo.fn_Auth_ShenBao(#{UserID},#{RoleName},State,CreateMan,AuditMan,TechMan,TechManager,AuditManager,CreateManager)=1
+            <if test="State!=null and State!=''">
+                And State =#{State}
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+</mapper>

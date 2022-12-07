@@ -1,0 +1,487 @@
+﻿*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    overflow: hidden;
+    font-family:"Microsoft YaHei UI" ;
+}
+a{
+    cursor: pointer;
+}
+.container{
+
+    /* position: fixed; */
+
+    /* width: 100%; */
+
+    /* height: 100%; */
+}
+.top{
+
+    height: 68px;
+
+    overflow: hidden;
+
+    width: 100%;
+
+    /* min-width: 1400px; */
+}
+.logo{
+    float: left;
+    width: 16%;
+    margin-left: -20px;
+    /* min-width: 200px; */
+}
+.logo img{
+    border: none;
+    width: 200px;
+
+    height: 76px;
+}
+.logoR{
+
+    /* float: left; */
+
+    overflow: hidden;
+
+    /* width: 71%; */
+
+    height: 74px;
+
+    line-height: 69px;
+
+    margin-left: 243px;
+}
+.navv {
+    float: left;
+}
+.navv a{
+
+    color: #666;
+
+    font-size: 13px;
+
+    margin-right: 22px;
+
+    height: 74px;
+
+    display: inline-block;
+}
+.navv a.active{
+
+    color: #1282e0;
+
+    font-weight: 700;
+
+    background: url("/appImages/line2.png") no-repeat;
+
+    background-position: center 53px;
+
+    background-size: 28px;
+
+    display: inline-block;
+
+    height: 82px;
+}
+.navr {
+    float: right;
+
+    position: absolute;
+
+    right: 16px;
+
+    top: 22px;
+}
+.navr a{
+  float: left;
+    margin: 0 8px;
+    cursor: pointer;
+}
+
+.navr a img{
+    width: 20px;
+    transition:3ms;
+    /* background-color: white; */
+}
+.navr a:hover img{
+    transform: scale(1.2,1.2);cursor: pointer;
+}
+.bottom{
+
+    height: 90%;
+
+    overflow: hidden;
+
+    background: #eaf2ff;
+
+    /* min-width: 1400px; */
+}
+.bottomL{
+
+    float: left;
+
+    width: 208px;
+
+    height: 100%;
+
+    background: #3e5883;
+
+    position: fixed;
+}
+.showmenu{
+
+    /* display: none; */
+
+    width: 208px;
+    display: none;
+
+}
+.hidemenu{
+
+    /* position: fixed; */
+
+    height: 10%;
+
+    padding: 8px;
+
+}
+.slidenavT{
+
+    position: relative;
+
+    height: 48px;
+
+    text-align: center;
+
+    line-height: 48px;
+
+    color: #ffff;
+
+    font-size: 17px;
+}
+.slidenavtitle{
+
+    color: #fff;
+}
+.menu{
+
+    position: absolute;
+
+    right: 12px;
+
+    top: 4px;
+}
+.menu img{
+
+}
+.slidenav{
+
+    width: 100%;
+}
+.slidenav a{
+
+    display: block;
+
+    height: 44px;
+
+    line-height: 44px;
+
+    color: #ddd;
+
+    border-bottom: 1px solid #365e77;
+
+    padding-left: 12px;
+
+    background: rgba(255,255,255,.1) url(/appImages/right.png) no-repeat 192px 16px;
+
+    width: 94%;
+
+    font-size: 15px;
+}
+.slidenav a.active{
+
+    background: #1b88ee url(/appImages/right.png) no-repeat 192px 16px;
+
+    color: #fff;
+}
+.slidenav a:hover{
+
+    background: #1b88ee url(/appImages/right.png) no-repeat 192px 16px;
+
+    color: #fff;
+}
+.bottomR{
+
+    /* float: left; */
+
+    /* width: 84.5%; */
+}
+.pagetab{
+
+    height: 40px;
+
+    line-height: 45px;
+
+    margin-left: 215px;
+}
+.pagetab a{
+
+    position: relative;
+
+    display: inline-block;
+
+    margin: 0 0 0 10px;
+
+    padding: 0 10px;
+
+    border: 1px solid #eee;
+
+    font-size: 14px;
+
+    background: #f7f7f7;
+
+    padding: 0 14px;
+
+    height: 28px;
+
+    margin-top: 0px;
+
+    line-height: 28px;
+
+    border: 1px solid #ddd;
+
+    display: inline-block;
+}
+.pagetab a.active{
+
+    background: #f7f7f7;
+
+    height: 34px;
+
+    /* padding: 10px; */
+}
+.pagetab a.active .close {
+    display: none;
+}
+.close {
+
+    position: absolute;
+
+    right: 0px;
+
+    top: -9px;
+}
+.bottommain{
+
+
+
+
+    height: 85%;
+
+    position: absolute;
+
+    width: 89%;
+
+    left: 150px;
+
+    padding-left: 10px;
+}
+
+.bottommain {}
+.b1{
+
+    overflow: hidden;
+
+    height: 260px;
+
+    /* width: 100%; */
+
+    margin-top: 10px;
+}
+.b1L{
+
+    float: left;
+
+    height: 260px;
+
+    background: #fff;
+
+    border-radius: 21px;
+
+    margin: 5px;
+
+    width: 71%;
+
+    overflow: hidden;
+}
+.box-title{
+    font-family: 微軟正黑體;
+    color: black;
+    border-bottom: 1px solid #eee;
+   font-weight: bold;
+    padding: 10px;
+}
+.b1R{
+
+    float: left;
+
+    height: 260px;
+
+    background: #fff;
+
+    border-radius: 20px;
+
+    margin: 5px 10px;
+
+    width: 26%;
+
+    overflow: hidden;
+}
+.b2{
+
+    overflow: hidden;
+
+    /* width: 100%; */
+}
+.b2item{
+
+    width: 31.5%;
+    height: 300px;
+    background: #fff;
+    margin: 15px 6px;
+    float: left;
+    border-radius: 20px;
+    overflow: hidden;
+}
+.b3{
+
+    margin-bottom: 50px;
+}
+.b3item{
+    width: 96%;
+    height: 420px;
+    background: #fff;
+    float: left;
+    margin: 0px 8px;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.qustnav{
+    overflow: hidden;
+    margin-top: 37px;
+}
+.qustnav a{
+    float: left;
+    display: block;
+    font-size: 15px;
+    color: #666;
+    text-decoration: none;
+    width: 11%;
+    text-align: center;
+}
+.qsnimg{
+
+    width: 62px;
+
+    height: 62px;
+
+    background: #eaf2ff;
+
+    margin: 10px auto;
+
+    text-align: center;
+
+    /* line-height: 63px; */
+
+    padding-top: 22px;
+
+    border-radius: 50%;
+}
+.qsnimg img{margin-top: -4px}
+.qsnname{
+
+    margin: 18px 0;
+}
+.huanjielist{
+    overflow: hidden;
+    /* margin-top: -13px; */
+    margin-bottom: 16px;
+}
+.huanjielistL{
+    text-align: center;
+    float: left;
+    width: 11%;
+    margin-top: 0;
+}
+.huanjielistL img{
+    width: 22px;
+    height: 20px;
+    vertical-align: middle;
+}
+.huanjielistR{
+    float: left;
+    width: 85%;
+    background: url("/appImages/huanjiebotom.png") no-repeat;
+    background-size: contain;
+    /* height: 138px; */
+    padding-left: 0;
+    margin-top: -3px;
+    /* background: #eee; */
+    padding-bottom: 0;
+    font-size: 16px;
+}
+.chartbox{
+    overflow: hidden;
+    width: 100%;
+}
+.charboxL{
+    width: 80%;
+    float: left;
+    /* height: 200px; */
+}
+.charboxR{
+    width: 20%;
+    float: left;
+    text-align: center;
+    font-size: 16px;
+    line-height: 20px;
+    margin-top: 21px;
+}
+.charboxRitem{
+    margin: 15px 0;
+}
+
+.charnamenum{
+
+    font-size: 19px;
+}
+.charname{
+
+    color: #666;
+
+    font-size: 14px;
+}
+.z1 {
+    background-size: 100%;
+    width: 318px;
+    /* margin: 0px auto; */
+    margin-left: 10px;
+    background: url(/appImages/line.png) no-repeat #fff 7px 10px;
+    border-radius: 5px;
+    background-size: 20px 100%;
+    margin-top: 27px;
+    color: #666;
+}
+.bottomain2{
+    width: 100%;
+    left: 33px;
+}
+.bottomL2{
+    background: #fff;
+    width: auto;
+}
+.pagetab2{
+    margin-left: 38px;
+}

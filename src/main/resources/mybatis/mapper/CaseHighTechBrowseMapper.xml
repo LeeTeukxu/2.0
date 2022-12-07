@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.CaseHighTechBrowseMapper">
+    <select id="getData" resultType="map">
+        Select * from (select *,row_number() over(ORDER  by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum
+        from View_CaseHighTechBrowse
+        <where>
+            1=1 And dbo.Auth_TechHigh(CasesID,SubID,State,#{UserID},#{RoleName})=1
+            <if test="State!=null and State!=''">
+                <if test="State!='90'">
+                    And State=#{State}
+                </if>
+            </if>
+            <if test="CasesID!=null and CasesID!=''">
+                And CasesID=#{CasesID}
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+    <select id="getWaitReport" resultType="map">
+        Select a.Num, b.EmpName as Name
+        from (Select Count(0) as Num, Man
+              from (
+                       SELECT SubNo, TechMan as Man, 'Tech' as Type
+                       FROM [CaseHighSub]
+                       Where ProcessState=51
+                         And dbo.Auth_TechHigh(CasesID
+                           , SubID
+                           , ProcessState
+                           , #{UserID}
+                           , #{RoleName})=1
+                       Union
+                       Select SubNo, CreateMan as Man, 'Bus' as Type
+                       FROM [CaseHighSub]
+                       Where ProcessState=51
+                         And dbo.Auth_TechHigh(CasesID
+                           , SubID
+                           , ProcessState
+                           , #{UserID}
+                           , #{RoleName})=1) a
+              Where a.Type = #{Type}
+              group by Man, Type) a
+                 inner join
+             v_LoginUser b on a.Man = b.UserID
+        Order by ${sortField} ${sortOrder}
+    </select>
+</mapper>

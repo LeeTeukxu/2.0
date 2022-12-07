@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.WorkNumberMapper">
+    <select id="getTZS" resultType="map">
+       Select TONGZHISBH,TZSMC,SHENQINGH,ZHUANLIMC,SHENQINGLX,SQR,FAWENRQ,TUploadTime,RowNum,_TotalNum from (
+       select *,row_number() over(ORDER  by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum
+        from View_TZSTiny
+        <where>
+            TUploadTime is not null
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+                and  dbo.Pantent_Authorize(#{DepID},#{UserID},#{RoleName},SHENQINGH)=1
+            </if>
+
+            <if test="Date!=null and Date!=''">
+                and (TUploadTime &gt; '${Date} 00:00:00' and TUploadTime &lt; '${Date} 23:59:59')
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+
+
+    <select id="getCPC" resultType="map">
+        Select SHENQINGH,FAMINGMC,SHENQINGLX,NEIBUBH,FAMINGRXM,SHENQINGR,UploadTime,RowNum,_TotalNum from (
+        select *,row_number() over(ORDER  by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum
+        from PantentInfo
+        <where>
+            UploadTime is not null
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+                and  dbo.Pantent_Authorize(#{DepID},#{UserID},#{RoleName},SHENQINGH)=1
+            </if>
+
+            <if test="Date!=null and Date!=''">
+                and (UploadTime &gt; '${Date} 00:00:00' and UploadTime &lt; '${Date} 23:59:59')
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+    <select id="getAddFee" resultType="map">
+        Select SHENQINGH,FAMINGMC,SHENQINGLX,FEENAME,MONEY,JIAOFEIR,CREATETIME,RowNum,_TotalNum from (
+        select *,row_number() over(ORDER  by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum
+        from VIEW_FEELISTNEW
+        <where>
+            JIAOFEIR is not null AND CREATETIME IS NOT NULL
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+                and  dbo.Pantent_Authorize(#{DepID},#{UserID},#{RoleName},SHENQINGH)=1
+            </if>
+
+            <if test="Date!=null and Date!=''">
+                and (CREATETIME &gt; '${Date} 00:00:00' and CREATETIME &lt; '${Date} 23:59:59')
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+
+    <select id="getPantent" resultType="map">
+        Select
+        SHENQINGH,FAMINGMC,SHENQINGLX,FAMINGRXM,SHENQINGR,SHENQINGRXM,ANJIANYWZT,FAMINGRXM,DAILIJGMC,LASTUPDATETIME,RowNum,_TotalNum
+        from (
+        select *,row_number() over(ORDER  by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum
+        from PantentInfo
+        <where>
+            LASTUPDATETIME is not null
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+                and  dbo.Pantent_Authorize(#{DepID},#{UserID},#{RoleName},SHENQINGH)=1
+            </if>
+
+            <if test="Date!=null and Date!=''">
+                and (LASTUPDATETIME &gt; '${Date} 00:00:00' and LASTUPDATETIME &lt; '${Date} 23:59:59')
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+</mapper>

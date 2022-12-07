@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.UploadProcessMapper">
+    <select id="getTZS"  resultType="map">
+        Select top 1
+        (Select Count(0)  from tzs where TONGZHISMC&lt;&gt;'电子申请回执' and TONGZHISBH is  not null)as AllNum,
+        (Select Count(0)  from tzs where TONGZHISMC&lt;&gt;'电子申请回执' and TONGZHISBH is  not null and  len(isnull(TZSPATH,''))>5) as UpNum
+        from tzs  where TONGZHISMC&lt;&gt;'电子申请回执' and TONGZHISBH is  not null
+    </select>
+    <select id="getCPC" resultType="map">
+        select top 1
+        (Select count(0) from PantentInfo Where Shenqingh is not null) as AllNum ,
+        (Select Count(0) from PantentInfo Where shenqingh is not null  and len(isnull(UploadPath,''))>5) as UpNum
+        from  PantentInfo Where Shenqingh is not null
+    </select>
+</mapper>

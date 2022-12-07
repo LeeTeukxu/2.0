@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.tbArrivalMapper">
+    <select id="getData" resultType="map">
+        Select * from (
+        select *,row_number() over(ORDER by ${sortField} ${sortOrder}) as
+        RowNum,Count(*) over() as _TotalNum from View_ArrivalRegistration_Window
+        <where>
+            1=1 AND dbo.fn_auth_PayBack(#{RoleName},#{UserID},ClaimStatus,Claimant,ReviewerStatus)=1
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>
+        )t Where RowNum BETWEEN #{Begin} And #{End}
+    </select>
+    <select id="getWorkData" resultType="map">
+        Select * from (
+        select *,row_number() over(ORDER by ${sortField} ${sortOrder}) as
+        RowNum,Count(*) over() as _TotalNum from View_ArrivalRegistration_Window
+        <where>
+            (ClaimStatus=1 or ClaimStatus=4) AND
+            dbo.fn_auth_PayBack(#{RoleName},#{UserID},ClaimStatus,Claimant,ReviewerStatus)=1
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>
+        )t Where RowNum BETWEEN #{Begin} And #{End}
+    </select>
+    <select id="getRenLinAndFuHe" resultType="tbArrivalRegistration">
+        SELECT [ArrivalRegistrationID], [DocumentNumber], [DateOfPayment], [PaymentMethod], [PaymentAccount],
+          [PaymentAmount], [Payer], [ReturnBank], [Description], [SignMan], [Claimant], [ClaimDate], [CustomerID],
+          [AgencyFee], [OfficalFee], [Remark], [ClaimStatus], [Reviewer], [ReviewerDate], [Note], [ReviewerStatus],
+          [UserID], [AddTime], (SELECT Name FROM tbClient WHERE ClientID=CustomerID) AS KHName,ATTIDS
+        FROM tbArrivalRegistration
+        WHERE ArrivalRegistrationID=#{0}
+    </select>
+</mapper>

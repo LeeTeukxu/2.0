@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.PickUpMapper">
+    <select id="getPickUpIdPage" resultType="String">
+        Select DISTINCT DrawNo from  View_Original
+        <where>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>
+        Order by ${sortField} ${sortOrder} offset #{Begin} Rows FETCH Next #{End} Rows only
+    </select>
+    <select id="getAllPickUpTotal" resultType="int">
+        Select Count(0) from  v_ZQGL
+        <where>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>
+    </select>
+    <select id="getAllDataByIds"  resultType="map">
+        Select * from (
+          Select  * from v_ZQGL Where PID in
+            <foreach collection="ids" open="(" close=")" separator="," item="id">
+                #{id}
+            </foreach>
+          Union
+          Select * from v_ZQGL Where FID in
+            <foreach collection="ids" open="(" close=")" separator="," item="id">
+                #{id}
+            </foreach>
+        ) t Order By ${sortField1} ${sortOrder}
+    </select>
+    <select id="getData" resultType="map">
+        Select * from (
+        select vt.*,row_number() over(ORDER  by ${sortField} ${sortOrder}) as
+        RowNum,Count(1) over() as _TotalNum
+        from v_ZQGL as vt
+        <where>
+
+            1=1
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+    <select id="getDatas" resultType="map">
+        Select * from (Select DrawNo,PickUp,PickUpTime,ostateText,PickUpApplicant,SHENQINGH,CONVERT(VARCHAR(100),PickUpApplicationTime,120) AS PickUpApplicationTime,_TotalNum,ROW_NUMBER() OVER(ORDER by ${sortField} ${sortOrder}) as PageNum from (select *,row_number() over(ORDER by ${sortField} ${sortOrder}) as RowNum,
+        row_number() over(Partition By DrawNo Order By id) as CountNum,
+        <if test="ostateText!=''">
+            <if test="ostateText==0">
+                (SELECT COUNT(*) FROM (SELECT DISTINCT DrawNo from(SELECT DrawNo,PickUpApplicant,SHENQINGH FROM View_Original WHERE ostateText IN (1,2))b WHERE dbo.fn_auth_PickUp(#{DepID},#{UserID},#{RoleName},b.SHENQINGH)=1 GROUP BY DrawNo,SHENQINGH)c) as _TotalNum
+            </if>
+            <if test="ostateText==1">
+                (SELECT COUNT(*) FROM (SELECT DISTINCT DrawNo from(SELECT DrawNo,PickUpApplicant,SHENQINGH FROM View_Original WHERE ostateText IN (1))b WHERE dbo.fn_auth_PickUp(#{DepID},#{UserID},#{RoleName},b.SHENQINGH)=1 GROUP BY DrawNo,SHENQINGH)c) as _TotalNum
+            </if>
+            <if test="ostateText==2">
+                (SELECT COUNT(*) FROM (SELECT DISTINCT DrawNo from(SELECT DrawNo,PickUpApplicant,SHENQINGH FROM View_Original WHERE ostateText IN (2))b WHERE dbo.fn_auth_PickUp(#{DepID},#{UserID},#{RoleName},b.SHENQINGH)=1 GROUP BY DrawNo,SHENQINGH)c) as _TotalNum
+            </if>
+        </if>
+        <if test="ostateText==''">
+            (SELECT COUNT(*) FROM (SELECT DISTINCT DrawNo from(SELECT DrawNo,PickUpApplicant,SHENQINGH FROM View_Original WHERE ostateText IN (1,2))b WHERE dbo.fn_auth_PickUp(#{DepID},#{UserID},#{RoleName},b.SHENQINGH)=1 GROUP BY DrawNo,SHENQINGH)c) as _TotalNum
+        </if>
+        from
+        View_Original as vt WHERE 1=1 AND dbo.fn_auth_PickUp(#{DepID},#{UserID},#{RoleName},vt.SHENQINGH)=1
+        <if test="orItems!=null">
+            <if test="orItems.size()>0">
+                And
+                <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                    (${item.field} ${item.oper} #{item.value})
+                </foreach>
+            </if>
+        </if>
+        <if test="andItems!=null">
+            <if test="andItems.size()>0">
+                And
+                <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                    (${item.field} ${item.oper} #{item.value})
+                </foreach>
+            </if>
+        </if>
+        )t
+        Where
+        CountNum=1 AND DrawNo IS NOT NULL) AS t1 WHERE t1.PageNum BETWEEN #{Begin} And #{End} ORDER by ${sortField} ${sortOrder}
+    </select>
+    <select id="getDetailDatas" resultType="map">
+        Select * from (select *,row_number() over(ORDER by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as
+        _TotalNum  from View_Original
+        <where>
+            <if test="ids!=null">
+                DrawNo IN (#{ids})
+            </if>
+        </where>
+        <if test="orItems!=null">
+            <if test="orItems.size()>0">
+                And
+                <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                    (${item.field} ${item.oper} #{item.value})
+                </foreach>
+            </if>
+        </if>
+        <if test="andItems!=null">
+            <if test="andItems.size()>0">
+                And
+                <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                    (${item.field} ${item.oper} #{item.value})
+                </foreach>
+            </if>
+        </if>
+        )t
+        Where
+        RowNum
+        BETWEEN #{Begin} And #{End}
+    </select>
+</mapper>

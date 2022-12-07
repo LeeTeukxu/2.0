@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.tradeCasesCounterMapper">
+    <select id="getMain" resultType="com.zhide.dtsystem.models.caseCounterInfo">
+        Select CasesID,null as SubID,State, createMan,createManager,AuditMan,AuditManager,TechMan,TechManager from
+        CasesMain
+    </select>
+
+    <select id="getSub" resultType="com.zhide.dtsystem.models.caseCounterInfo">
+        Select a.CasesID,a.SubID,a.ProcessState as
+        State,b.CreateMan,b.CreateManager,b.AuditMan,b.AuditManager,a.TechMan,a.TechManager
+        from CasesYwItems  a inner join TradeCase b on a.CasesID=b.CasesID Where CanUse=1 And isnull(State,0)>0 AND dbo.fn_Auth_TradeCasesTech(#{UserID},#{RoleName},b.CreateMan,b.CreateManager)=1
+    </select>
+
+    <select id="getTradeCases" resultType="com.zhide.dtsystem.models.caseCounterInfo">
+        SELECT * FROM TradeCase WHERE 1=1 AND dbo.fn_Auth_TradeCasesTech(#{UserID},#{RoleName},CreateMan,CreateManager)=1
+    </select>
+</mapper>

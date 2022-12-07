@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.SellReportMapper">
+    <select id="getData"  resultType="map">
+        <if test="groupField=='Day'">
+            Select Nums,DocSN,ClientName,CreateManName,DepName,CreateTime,TotalGuan,TotalDai,UsedGuan,
+            UsedDai,FreeGuan,FreeDai from View_CasesMainBrowse Where State>=4 And
+            isnull(TotalGuan,0)+isnull(TotalDai,0)>0
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},CreateTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            order by ${sortField}  ${sortOrder} offset  #{Begin} rows fetch next ${End} rows ONLY
+        </if>
+        <if test="groupField=='Week'">
+            Select TotalGuan,TotalDai,UsedGuan,UsedDai,FreeGuan,FreeDai,YearMonth as ItemName from (Select Sum(TotalGuan) as TotalGuan,Sum(TotalDai) as
+            TotalDai,Sum(UsedGuan) as UsedGuan,Sum(UsedDai) as UsedDai,Sum(FreeGuan) as FreeGuan,Sum(FreeDai) as FreeDai,dbo.getMonthWeek(CreateTime) YearMonth
+            from  View_CasesMainBrowse Where State>=4 And  isnull(TotalGuan,0)+isnull(TotalDai,0)>0
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},CreateTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            Group by dbo.getMonthWeek(CreateTime))t Order by ${sortField} ${sortOrder} offset  #{Begin} rows fetch next
+            ${End}
+            rows ONLY
+        </if>
+        <if test="groupField=='Month'">
+            Select  TotalGuan,TotalDai,UsedGuan,UsedDai,FreeGuan,FreeDai,convert(varchar,Year)+'年第'+convert(varchar,Month)+'月' as ItemName from (Select Sum(TotalGuan) as TotalGuan,Sum(TotalDai) as
+            TotalDai,Sum(UsedGuan) as UsedGuan,Sum(UsedDai) as UsedDai,Sum(FreeGuan) as FreeGuan,Sum(FreeDai) as
+            FreeDai,DATEPART(month,CreateTime) as Month,Year(CreateTime) as Year from View_CasesMainBrowse Where
+            State>=4   And  isnull(TotalGuan,0)+isnull(TotalDai,0)>0
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},CreateTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            Group by DATEPART(month,CreateTime),Year(CreateTime))t Order by Year,Month offset  #{Begin} rows fetch next ${End} rows ONLY
+        </if>
+        <if test="groupField=='ClientName' or groupField=='CreateManName' or groupField=='DepName'">
+            Select TotalGuan,TotalDai,UsedGuan,UsedDai,FreeGuan,FreeDai,${groupField} as ItemName from
+            (Select Sum(TotalGuan) as TotalGuan,Sum(TotalDai) as
+            TotalDai,Sum(UsedGuan) as UsedGuan,Sum(UsedDai) as UsedDai,Sum(FreeGuan) as FreeGuan,Sum(FreeDai) as
+            FreeDai,${groupField} from View_CasesMainBrowse Where State>=4 And (isnull(TotalGuan,0)+isnull(TotalDai,0))>0
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},CreateTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            Group by ${groupField})t  Order by ${sortField} ${sortOrder}  offset  #{Begin} rows fetch next ${End} rows ONLY
+        </if>
+    </select>
+    <select id="getTotal" resultType="int">
+        <if test="groupField=='Day'">
+            Select Count(0) from View_CasesMainBrowse Where State>=4 And (isnull(TotalGuan,0)+isnull(TotalDai,0))>0
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},CreateTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+
+        </if>
+        <if test="groupField=='Week'">
+            Select Count(0) from (Select Sum(TotalGuan) as Money,dbo.getMonthWeek(CreateTime) as  YearMonth
+            from View_CasesMainBrowse Where State>=4 And (isnull(TotalGuan,0)+isnull(TotalDai,0))>0
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},CreateTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            Group by dbo.getMonthWeek(CreateTime))t
+        </if>
+        <if test="groupField=='Month'">
+            Select Count(0) from (Select Sum(TotalGuan) as
+            Money,DATEPART(month,CreateTime) as Month,Year(CreateTime) as Year from View_CasesMainBrowse Where State>=4 And (isnull(TotalGuan,0)+isnull(TotalDai,0))>0
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},CreateTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            Group by DATEPART(month,CreateTime),Year(CreateTime))t
+        </if>
+        <if test="groupField=='ClientName' or groupField=='CreateManName' or groupField=='DepName'">
+            Select Count(0) from (Select Sum(TotalGuan) as
+            Money,${groupField} from View_CasesMainBrowse Where State>=4 And (isnull(TotalGuan,0)+isnull(TotalDai,0))>0
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},CreateTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            Group by ${groupField})t
+        </if>
+    </select>
+    <select id="getSum" resultType="map">
+        Select Sum(TotalGuan) as TotalGuan,Sum(TotalDai) as
+        TotalDai,Sum(UsedGuan) as UsedGuan,Sum(UsedDai) as UsedDai,Sum(FreeGuan) as FreeGuan,Sum(FreeDai) as
+        FreeDai from  View_CasesMainBrowse Where State>=4  And  isnull(TotalGuan,0)+isnull(TotalDai,0)>0
+        <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+            And DateDIFF(${timeField},CreateTime,getDate())=${timeValue}
+        </if>
+        <if test="Items!=null">
+            <if test="Items.size()>0">
+                And
+                <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                    (${item.field} ${item.oper} #{item.value})
+                </foreach>
+            </if>
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.PantentInfoMemoMapper">
+    <resultMap id="v_PantentInfoMemo" type="com.zhide.dtsystem.models.v_PantentInfoMemo">
+        <id property="mid" column="MID"></id>
+        <result column="CreateManName" property="createManName"></result>
+        <result column="UpdateManName" property="updateManName"></result>
+        <result column="SHENQINGH" property="shenqingh"></result>
+        <result column="Memo" property="memo"></result>
+        <result column="CreateDate" property="createDate"></result>
+        <result column="UpdateDate" property="updateDate"></result>
+        <result column="MenuName" property="menuName"></result>
+    </resultMap>
+    <select id="getAllByIds" resultMap="v_PantentInfoMemo">
+        Select * from v_PantentInfoMemo Where SHENQINGH in
+        <foreach collection="list" index="index" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+        Order by isnull(UpdateDate,CreateDate) Desc
+    </select>
+</mapper>

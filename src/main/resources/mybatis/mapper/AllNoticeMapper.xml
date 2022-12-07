@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.AllNoticeMapper">
+    <select id="getAllNoticeIdPage" resultType="map">
+        <!--Select SHENQINGH from  v_TZSOrder-->
+        select *,row_number() over(ORDER  by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum from
+      V_TZSOrder
+        <where>
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+                SHENQINGH in (Select Code from fn_auth_shenqingh(#{DepID},#{UserID},#{RoleName}))
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>
+        Order by ${sortField} ${sortOrder} offset #{Begin} Rows FETCH Next #{End} Rows only
+    </select>
+    <select id="getAllNoticeTotal" resultType="int">
+        Select Count(0) from  v_TZSOrder
+        <where>
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and  RoleName.indexOf('财务')==-1">
+                SHENQINGH in (Select Code from fn_auth_shenqingh(#{DepID},#{UserID},#{RoleName}))
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>
+    </select>
+    <select id="getAllDataByIds"  resultType="map">
+        Select * from (
+          Select  * from v_TZSInfo
+            <if test="ids!=null and ids.size()>0">
+                Where PID in
+                <foreach collection="ids" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+          Union
+          Select * from v_TZSInfo
+          <if test="ids!=null and ids.size()>0">
+              Where FID in
+              <foreach collection="ids" open="(" close=")" separator="," item="id">
+                  #{id}
+              </foreach>
+          </if>
+        ) t Order By ${sortField} ${sortOrder}
+    </select>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.SQPermissionMapper">
+    <select id="getIds" resultType="String">
+       Select Distinct  SHENQINGH  from PatentInfoPermission Where 1=1
+       <if test="roleName!=null and roleName=1">
+           <if test="Ids.size()>0">
+               And  UserID in
+               <foreach collection="Ids" separator="or" item="id" open="(" close=")">
+                   #{id}
+               </foreach>
+           </if>
+           <if test="userType=='KH'">
+                And UserType='KH'
+           </if>
+           <if test="userType=='EMP'">
+               And UserType != 'KH'
+           </if>
+       </if>
+    </select>
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.ClientLinkWindowMapper">
+    <select id="getDataWindow" resultType="map">
+        SELECT * FROM (
+       SELECT LinkMan, Mobile, Address, PostCode, ClientName, Email,ClientID,row_number() over(ORDER  by ${sortField} ${sortOrder}) as
+        RowNum,Count(1) over() as _TotalNum
+        from View_ClientLinkers vt WHERE 1=1
+        <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1">
+            and dbo.fn_auth_client_signman(#{UserID},#{RoleName},#{DepID},SignMan)=1
+        </if>
+        <if test="key!=null and key!=''">
+            And ClientName like #{key}
+        </if>
+        <if test="customer!=null and customer!=''">
+            And ClientID like #{customer}
+        </if>
+        )t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+    <insert id="addImportClientLink" useGeneratedKeys="true" keyProperty="linkID" parameterType="com.zhide.dtsystem.models.tbClientLinkers">
+        INSERT INTO tbClientLinkers (ClientID,CType,LinkMan,Mobile,Address,LinkPhone,Memo,CreateTime) VALUES (#{clientID},#{cType},#{linkMan},#{mobile},#{address},#{linkPhone},#{memo},getDate())
+    </insert>
+</mapper>

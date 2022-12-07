@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>发送邮件内容</head>
+    <body>
+        尊敬的客户，您好:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;感谢您对智德知识产权的信任和支持，本次给您发送的文件清单如下：<br/>
+        <#list rows as row>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${index+1}、${row.SHENQINGRXM}-${row.PID}-${row.FAMINGMC}-${row.TONGZHISMC}<br/>
+        </#list>
+        <#if Type=="补正通知书" || Type=="审查意见通知书">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;根据我司工作流程规范，需要将上述通知书的下发及时通知到您这边，让您知道您的专利审查进度！<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;您有时间可以看下审查意见通知书和原申请文件，对审查员的观点发表您的看法，看有什么建议提供给我们，若没有建议也没有关系，我司代理人同样也会跟进，并针对审查意见通知书及时做出对应的答辩处理，请您放心！<br/>
+        </#if>
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;智德是湖南省大型知识产权服务机构，总部位于美丽的星城长沙。智德知识产权事务所（机构代号43207）成立于2004年，国内第一批知识产权代理事务所，历经多年发展2016年荣获湖南省优秀代理机构、湖南省申请量前五专利事务所。为了更好的服务客户，目前智德在湖南省内主要城市设立了分支机构。<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;经营范围：专利申请、专利挖掘、发明专利风险代理、高新技术企业认定、商标注册、版权登记<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总部地址：湖南省长沙市雨花区湘府东路华悦城1栋2610-2612室内<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总部电话：0731-88393139
+    </body>
+</html>

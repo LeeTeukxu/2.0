@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.OriginalKdMapper">
+    <select id="getData" resultType="map">
+        Select * from (Select PackageNum,PackageContent,PackageStatus,CONVERT(VARCHAR(100),DeliveryTime,120) AS DeliveryTime,Render,Postcode,Address,ContactPerson,CourierCompany,PostalCode,KHName,Phone,ExpressNotes,CONVERT(VARCHAR(100),ApplicationTime,120) AS ApplicationTime,MailAppicant,_TotalNum,ROW_NUMBER() OVER(ORDER by ${sortField} ${sortOrder}) as PageNum from (select *,row_number() over(ORDER by ${sortField} ${sortOrder}) as RowNum,
+        row_number() over(Partition By PackageNum Order By id) as CountNum,
+        <if test="PackageStatus!=''">
+            <if test="PackageStatus==0">
+                (SELECT COUNT(*) FROM (SELECT DISTINCT PackageNum from(SELECT PackageNum,SHENQINGH FROM View_OriginalKd WHERE PackageStatus IN (1,2))b WHERE dbo.fn_auth_PickUp(#{DepID},#{UserID},#{RoleName},b.SHENQINGH)=1 GROUP BY PackageNum,SHENQINGH)c) as _TotalNum
+            </if>
+            <if test="PackageStatus==1">
+                (SELECT COUNT(*) FROM (SELECT DISTINCT PackageNum from(SELECT PackageNum,SHENQINGH FROM View_OriginalKd WHERE PackageStatus IN (1))b WHERE dbo.fn_auth_PickUp(#{DepID},#{UserID},#{RoleName},b.SHENQINGH)=1 GROUP BY PackageNum,SHENQINGH)c) as _TotalNum
+            </if>
+            <if test="PackageStatus==2">
+                (SELECT COUNT(*) FROM (SELECT DISTINCT PackageNum from(SELECT PackageNum,SHENQINGH FROM View_OriginalKd WHERE PackageStatus IN (2))b WHERE dbo.fn_auth_PickUp(#{DepID},#{UserID},#{RoleName},b.SHENQINGH)=1 GROUP BY PackageNum,SHENQINGH)c) as _TotalNum
+            </if>
+        </if>
+        <if test="PackageStatus==''">
+            (SELECT COUNT(*) FROM (SELECT DISTINCT PackageNum from(SELECT PackageNum,SHENQINGH FROM View_OriginalKd WHERE PackageStatus IN (1,2))b WHERE dbo.fn_auth_PickUp(#{DepID},#{UserID},#{RoleName},b.SHENQINGH)=1 GROUP BY PackageNum,SHENQINGH)c) as _TotalNum
+        </if>
+        from
+        View_OriginalKd vt WHERE 1=1 AND dbo.fn_auth_PickUp(#{DepID},#{UserID},#{RoleName},vt.SHENQINGH)=1
+        <if test="orItems!=null">
+            <if test="orItems.size()>0">
+                And
+                <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                    (${item.field} ${item.oper} #{item.value})
+                </foreach>
+            </if>
+        </if>
+        <if test="andItems!=null">
+            <if test="andItems.size()>0">
+                And
+                <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                    (${item.field} ${item.oper} #{item.value})
+                </foreach>
+            </if>
+        </if>
+        )t
+        Where
+        CountNum=1) AS t1 WHERE t1.PageNum BETWEEN #{Begin} And #{End} ORDER by ${sortField} ${sortOrder}
+    </select>
+</mapper>

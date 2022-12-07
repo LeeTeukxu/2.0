@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.WorkBenchMapper">
+    <select id="getPantentTotalByType" resultType="Map">
+        <if test="roleName!='系统管理员'">
+            SELECT Num as value, CASE Type WHEN 0 THEN '发明专利' WHEN 1 THEN '实用新型' ELSE '外观设计' END AS name
+            FROM (SELECT COUNT(0) AS Num, PantentInfo.SHENQINGLX AS Type
+            FROM PatentInfoPermission INNER JOIN
+            PantentInfo ON PatentInfoPermission.SHENQINGH = PantentInfo.SHENQINGH
+            WHERE PantentInfo.SHENQINGLX in(0,1,2) And (PatentInfoPermission.USERID = #{userID})
+            <if test="roleName=='客户'">
+                And (PatentInfoPermission.USERTYPE ='KH')
+            </if>
+            <if test="roleName!='客户'">
+                And (PatentInfoPermission.USERTYPE !='KH')
+            </if>
+            GROUP BY PantentInfo.SHENQINGLX) AS derivedtbl_1
+        </if>
+        <if test="roleName=='系统管理员'">
+            SELECT Num as value, CASE Type WHEN 0 THEN '发明专利' WHEN 1 THEN '实用新型' ELSE '外观设计' END AS name
+            FROM (SELECT COUNT(0) AS Num, SHENQINGLX AS Type
+            FROM PantentInfo
+            WHERE (SHENQINGLX IN (0, 1, 2))
+            GROUP BY SHENQINGLX) AS derivedtbl_1
+        </if>
+    </select>
+    <select id="getBuZhengNoticeTotal" resultType="Map">
+        <if test="roleName=='系统管理员'">
+            SELECT COUNT(0) AS value, '已答辩' AS name
+            FROM (SELECT ISNULL(TZSConfig.ISCOMMIT, 0) AS IsCommit
+            FROM TZS INNER JOIN TZSConfig ON TZS.TONGZHISBH = TZSConfig.TZSBH
+            WHERE (TZS.TONGZHISMC LIKE N'%补正通知书%') AND (TZSConfig.ISCOMMIT = 1)) AS derivedtbl_1
+            union
+            Select Count(0)-(SELECT Count(0) FROM TZS LEFT OUTER JOIN TZSConfig ON
+            TZS.TONGZHISBH = TZSConfig.TZSBH WHERE (TZS.TONGZHISMC LIKE N'%补正通知书%') AND
+            (TZSConfig.ISCOMMIT = 1)) as value,'未答辩' as name from tzs where tongzhismc like '%补正通知书%'
+        </if>
+        <if test="roleName!='系统管理员'">
+            SELECT COUNT(0) AS value, '已答辩' AS name
+            FROM (SELECT ISNULL(TZSConfig.ISCOMMIT, 0) AS IsCommit
+            FROM TZS INNER JOIN TZSConfig ON TZS.TONGZHISBH = TZSConfig.TZSBH
+            WHERE (TZS.TONGZHISMC LIKE N'%补正通知书%') AND (TZSConfig.ISCOMMIT = 1)
+            And TZS.SHENQINGH in(Select Code from dbo.fn_auth_shenqingh(#{userID},#{depID},#{roleName}))) AS
+            derivedtbl_1
+            union
+            Select Count(0)-(SELECT Count(0) FROM TZS LEFT OUTER JOIN TZSConfig ON TZS.TONGZHISBH = TZSConfig.TZSBH
+            WHERE (TZS.TONGZHISMC LIKE N'%补正通知书%') AND (TZSConfig.ISCOMMIT = 1)
+            And TZS.SHENQINGH in(Select Code from dbo.fn_auth_shenqingh(#{userID},#{depID},#{roleName}))) as value,'未答辩'
+            as
+            name
+            from tzs
+            where tongzhismc like '%补正通知书%' And TZS.SHENQINGH in(Select Code from
+            dbo.fn_auth_shenqingh(#{userID},#{depID},#{roleName}))
+
+        </if>
+    </select>
+    <select id="getShenChaNoticeTotal" resultType="Map">
+        <if test="roleName=='系统管理员'">
+            SELECT COUNT(0) AS value, '已答辩' AS name
+            FROM (SELECT ISNULL(TZSConfig.ISCOMMIT, 0) AS IsCommit
+            FROM TZS INNER JOIN TZSConfig ON TZS.TONGZHISBH = TZSConfig.TZSBH
+            WHERE (TZS.TONGZHISMC LIKE N'%审查意见通知书%') AND (TZSConfig.ISCOMMIT = 1)) AS derivedtbl_1
+            union
+            Select Count(0)-(SELECT Count(0) FROM TZS LEFT OUTER JOIN TZSConfig ON
+            TZS.TONGZHISBH = TZSConfig.TZSBH WHERE (TZS.TONGZHISMC LIKE N'%审查意见通知书%') AND
+            (TZSConfig.ISCOMMIT = 1)) as value,'未答辩' as name from tzs where tongzhismc like '%审查意见通知书%'
+        </if>
+        <if test="roleName!='系统管理员'">
+            SELECT COUNT(0) AS value, '已答辩' AS name
+            FROM (SELECT ISNULL(TZSConfig.ISCOMMIT, 0) AS IsCommit
+            FROM TZS INNER JOIN TZSConfig ON TZS.TONGZHISBH = TZSConfig.TZSBH
+            WHERE (TZS.TONGZHISMC LIKE N'%审查意见通知书%') AND (TZSConfig.ISCOMMIT = 1)
+            And TZS.SHENQINGH in(Select Code from fn_auth_shenqingh(#{userID},#{depID},#{roleName}))) AS derivedtbl_1
+            union
+            Select Count(0)-(SELECT Count(0) FROM TZS LEFT OUTER JOIN TZSConfig ON TZS.TONGZHISBH = TZSConfig.TZSBH
+            WHERE (TZS.TONGZHISMC LIKE N'%审查意见通知书%') AND (TZSConfig.ISCOMMIT = 1)
+            And TZS.SHENQINGH in(Select Code from dbo.fn_auth_shenqingh(#{userID},#{depID},#{roleName}))) as value,'未答辩'
+            as
+            name
+            from tzs
+            where tongzhismc like '%审查意见通知书%' And TZS.SHENQINGH in(Select Code from
+            dbo.fn_auth_shenqingh(#{userID},#{depID},#{roleName}))
+        </if>
+    </select>
+    <select id="getLastMonthTZS" resultType="Map">
+        SELECT TOP (10) ZHUANLIMC, QX, TZSMC, SHENQINGLX, SHENQINGH, FAWENRQ, NEIBUBH, JIAJI, DAYS
+        FROM View_TZS
+        WHERE (TZSMC LIKE '%${Type}%') AND (ISCOMMIT = 0) And Days>=0 And Days&lt;=${Days}
+        <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+            And dbo.Pantent_Authorize(#{DepID},#{UserID},#{RoleName},SHENQINGH)=1
+        </if>
+        <if test="orItems!=null">
+            <if test="orItems.size()>0">
+                And
+                <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                    (${item.field} ${item.oper} #{item.value})
+                </foreach>
+            </if>
+        </if>
+        ORDER BY ${sortField} ${sortOrder}
+    </select>
+    <select id="getLastMonthGovFee" resultType="Map">
+        Select * from (SELECT *,row_number() over(ORDER by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as
+        _TotalNum
+        FROM (SELECT fee.*,per.USERID,info.Name AS ClientName,info.ClientID,info.cootype,(SELECT TOP 1 Mobile FROM View_ClientLinkers WHERE ClientID=info.ClientID) as Mobile FROM View_LastMonthGovFee AS fee LEFT JOIN
+        View_LastMonthGovFeePermission AS per ON fee.AppNo=per.SHENQINGH LEFT JOIN
+        View_ClientInfo AS info ON per.USERID=info.ClientID
+        WHERE (Days >= 0) AND (Days &lt;=${Days}))x WHERE 1=1
+        <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+            And dbo.Pantent_Authorize(#{DepID},#{UserID},#{RoleName},AppNo)=1
+        </if>
+        <if test="orItems!=null">
+            <if test="orItems.size()>0">
+                And
+                <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                    (${item.field} ${item.oper} #{item.value})
+                </foreach>
+            </if>
+        </if>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+
+    <select id="getWorkMonths" resultType="map">
+        Select convert(varchar,Max(WorkMonth))+'月' as WorkMonth,
+        <foreach collection="Items"  separator=" , " item="item">
+            Sum(iif(TechMan='${item}' ,WorkDays,0)) as '${item}'
+        </foreach>
+        FROM View_WorkMonths Where WorkYear =#{Year}  Group by WorkMonth
+        UNION
+        Select 'X、个人汇总' as WorkMonth,
+        <foreach collection="Items"  separator=" , " item="item">
+            Sum(iif(TechMan='${item}' ,WorkDays,0)) as '${item}'
+        </foreach>
+        FROM View_WorkMonths Where WorkYear =#{Year}
+        UNION
+        SELECT  top 1 'Y、部门汇总' as WorkMonth,
+        <foreach collection="Items" separator=" , " item="item">
+            (Select Sum(WorkDays) from View_WorkMonths Where WorkYear=#{Year} And DepName=(
+                Select DepName from V_LoginUser Where EmpName='${item}')) as '${item}'
+        </foreach>
+        FROM View_WorkMonths Where WorkYear=#{Year}
+        UNION
+        SELECT  top 1 'Z、合计' as WorkMonth,
+        <foreach collection="Items" separator=" , " item="item">
+            (Select Sum(WorkDays) from View_WorkMonths Where WorkYear=#{Year}) as '${item}'
+        </foreach>
+        FROM View_WorkMonths Where WorkYear=#{Year}
+    </select>
+</mapper>

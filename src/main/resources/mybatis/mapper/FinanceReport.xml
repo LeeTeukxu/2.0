@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.FinanceReportMapper">
+    <select id="getData"  resultType="map">
+        <if test="groupField=='Day'">
+            Select * from View_AllMoneyDetail Where 1=1
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},AddTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            order by ${sortField} ${sortOrder} offset  #{Begin} rows fetch next ${End} rows ONLY
+        </if>
+        <if test="groupField=='Week'">
+            Select Money,YearMonth as ItemName from (Select Sum(Amount) as Money,dbo.getMonthWeek(AddTime) YearMonth
+            from View_AllMoneyDetail Where 1=1
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},AddTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            Group by dbo.getMonthWeek(AddTime))t Order by YearMonth offset  #{Begin} rows fetch next ${End} rows ONLY
+        </if>
+        <if test="groupField=='Month'">
+            Select Money,convert(varchar,Year)+'年第'+convert(varchar,Month)+'月' as ItemName from (Select Sum(Amount) as
+            Money,DATEPART(month,AddTime) as Month,Year(AddTime) as Year from View_AllMoneyDetail Where 1=1
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},AddTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            Group by DATEPART(month,AddTime),Year(AddTime))t Order by Year,Month offset  #{Begin} rows fetch next ${End} rows ONLY
+        </if>
+        <if test="groupField=='Payer' or groupField=='AddUser' or groupField=='LYR'">
+            Select Money,${groupField} as ItemName from (Select Sum(Amount) as
+            Money,${groupField} from View_AllMoneyDetail Where 1=1
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},AddTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            Group by ${groupField})t Order by ${groupField} offset  #{Begin} rows fetch next ${End} rows ONLY
+        </if>
+    </select>
+    <select id="getTotal" resultType="int">
+        <if test="groupField=='Day'">
+            Select Count(0) from View_AllMoneyDetail Where 1=1
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},AddTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+
+        </if>
+        <if test="groupField=='Week'">
+            Select Count(0) from (Select Sum(Amount) as Money,dbo.getMonthWeek(AddTime) YearMonth
+            from View_AllMoneyDetail Where 1=1
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},AddTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            Group by dbo.getMonthWeek(AddTime))t
+        </if>
+        <if test="groupField=='Month'">
+            Select Count(0) from (Select Sum(Amount) as
+            Money,DATEPART(month,AddTime) as Month,Year(AddTime) as Year from View_AllMoneyDetail Where 1=1
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},AddTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            Group by DATEPART(month,AddTime),Year(AddTime))t
+        </if>
+        <if test="groupField=='Payer' or groupField=='AddUser' or groupField=='LYR'">
+            Select Count(0) from (Select Sum(Amount) as
+            Money,${groupField} from View_AllMoneyDetail Where 1=1
+            <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+                And DateDIFF(${timeField},AddTime,getDate())=${timeValue}
+            </if>
+            <if test="Items!=null">
+                <if test="Items.size()>0">
+                    And
+                    <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            Group by ${groupField})t
+        </if>
+    </select>
+    <select id="getSum" resultType="double">
+        Select Sum(Amount) from View_AllMoneyDetail Where 1=1
+        <if test="timeField!=null and timeField!='' and timeValue!=null and timeValue!=''">
+            And DateDIFF(${timeField},AddTime,getDate())=${timeValue}
+        </if>
+        <if test="Items!=null">
+            <if test="Items.size()>0">
+                And
+                <foreach collection="Items" open="(" close=")" separator=" And " item="item">
+                    (${item.field} ${item.oper} #{item.value})
+                </foreach>
+            </if>
+        </if>
+    </select>
+</mapper>

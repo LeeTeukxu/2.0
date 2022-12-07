@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.FeeItemMemoMapper">
+    <resultMap id="v_PantentInfoMemo" type="com.zhide.dtsystem.models.v_PantentInfoMemo">
+        <id property="mid" column="MID"></id>
+        <result column="CreateManName" property="createManName"></result>
+        <result column="UpdateManName" property="updateManName"></result>
+        <result column="SHENQINGH" property="shenqingh"></result>
+        <result column="Memo" property="memo"></result>
+        <result column="CreateDate" property="createDate"></result>
+        <result column="UpdateDate" property="updateDate"></result>
+        <result column="MenuName" property="menuName"></result>
+    </resultMap>
+    <select id="getAllByIds" resultMap="v_PantentInfoMemo">
+        Select a.Memo,a.FeeID as shenqingh,b.EmpName as createManName,a.CreateTime as
+        createDate,a.UpdateTime as updateDate,c.EmpName as
+        UpdateManName  from FeeMemo a
+        inner join dbo.v_LoginUser b on a.CreateMan=b.UserID
+        left join dbo.v_LoginUser c on a.UpdateMan=c.UserID
+        Where a.Type =#{Type} And  FeeID in
+        <foreach collection="IDS" index="index" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+    </select>
+    <select id="getAllBySHENQINGHs" resultMap="v_PantentInfoMemo">
+        SELECT a.Memo,d.SHENQINGH AS shenqingh,b.EmpName AS createManName,a.CreateTime AS
+        createDate,a.UpdateTime AS updateDate,c.EmpName AS
+        UpdateManName  FROM FeeMemo a
+        INNER JOIN dbo.v_LoginUser b ON a.CreateMan=b.UserID
+        LEFT JOIN dbo.v_LoginUser c ON a.UpdateMan=c.UserID
+        LEFT JOIN dbo.View_FeeListNew d ON a.FeeID=d.ID
+        WHERE a.Type =#{Type} AND d.SHENQINGH IN
+        <foreach collection="IDS" index="index" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

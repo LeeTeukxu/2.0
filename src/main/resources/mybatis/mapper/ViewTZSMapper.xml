@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.ViewTZSMapper">
+    <select id="getData" resultType="map">
+        Select * from (
+        select *,row_number() over(ORDER by ${sortField} ${sortOrder}) as RowNum,Count(*) over() as _TotalNum
+        from View_TZS
+        <where>
+            1=1
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+                And Shenqingh in(Select Code from fn_auth_shenqingh(#{DepID},#{UserID},#{RoleName}))
+            </if>
+            <if test="Type!=null and Type!=''">
+                and TZSMC like #{Type}
+            </if>
+            <if test="Status!=null and Status!=''">
+                and ZHUANGTAI=#{Status}
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>
+        )t Where RowNum BETWEEN #{Begin} And #{End}
+    </select>
+    <select id="getQuickData" resultType="map">
+        select a.* from View_TZS a inner join (
+        Select TONGZHISBH from VIEW_TZSCount
+        <where>
+            1=1
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+                And Shenqingh in(Select Code from fn_auth_shenqingh(#{DepID},#{UserID},#{RoleName}))
+            </if>
+            <if test="Type!=null and Type!=''">
+                and TZSMC like #{Type}
+            </if>
+            <if test="Status!=null and Status!=''">
+                and ZHUANGTAI=#{Status}
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>
+        Order By ${sortField} ${sortOrder} offset #{Begin} rows fetch next ${End} rows ONLY
+        ) b on a.TONGZHISBH=b.TONGZHISBH Order by ${sortField} ${sortOrder}
+    </select>
+    <select id="getQuickCount" resultType="int">
+        SELECT COUNT (*) FROM TZS a
+        INNER JOIN
+        (
+        SELECT TONGZHISBH FROM TZS
+        <where>
+            1=1
+            <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+                And Shenqingh in(Select Code from fn_auth_shenqingh(#{DepID},#{UserID},#{RoleName}))
+            </if>
+            <if test="Type!=null and Type!=''">
+                and TONGZHISMC like #{Type}
+            </if>
+            <if test="Status!=null and Status!=''">
+                And ZHUANGTAI=#{Status}
+            </if>
+        </where>
+        AND TONGZHISBH IN (
+        SELECT TONGZHISBH FROM View_TZS
+        <where>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>
+        )
+        ) b ON a.TONGZHISBH = b.TONGZHISBH
+    </select>
+    <select id="getReportData" resultType="map">
+        Select TechMan , Count(0) as Total,
+        Sum(Case ISREPLY when 1 then 1 else 0 end) as Reply ,
+        Sum(Case ISREPLY when 0 then 1 else 0 end)as NotReply,
+        Sum(Case When ISREPLY=1 And ISCOMMIT=0 then 1 else 0 end) as NotCommit
+        from View_TzsReport  Where 1=1
+        <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+            And Shenqingh in(Select Code from fn_auth_shenqingh(#{DepID},#{UserID},#{RoleName}))
+        </if>
+        <if test="Begin!=null and Begin!=''">
+            And ReplyDate>=#{Begin}
+        </if>
+        <if test="End!=null and End!=''">
+            And ReplyDate&lt;=#{End}
+        </if>
+        <if test="Type!=null and Type!=''">
+            And TONGZHISMC Like #{Type}
+        </if>
+         group by TechMan Order by ${sortField} ${sortOrder}
+    </select>
+
+    <select id="getAllEmptyApplyMans" resultType="map">
+        select top 10 a.SHENQINGH,b.TZSPATH from PantentInfo a inner join TZS b  on a.SHENQINGH=b.SHENQINGH Where
+            SHENQINGRXM is null AND b.TZSPATH IS NOT NULL  and charIndex('放弃',NEIBUBH)=0 and TONGZHISMC='专利申请受理通知书'
+    </select>
+</mapper>

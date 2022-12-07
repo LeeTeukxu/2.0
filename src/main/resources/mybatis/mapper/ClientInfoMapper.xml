@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.ClientInfoMapper">
+    <select id="getPageData" resultType="map">
+        Select * from (select *,row_number() over(ORDER by
+        ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum from View_PageClientInfo Where 1=1
+        <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1">
+            and dbo.fn_auth_client_signman(#{UserID},#{RoleName},#{DepID},SignMan)=1
+        </if>
+        <if test="key!=null and key!=''">
+            And Name like #{key}
+        </if>
+        <if test="orItems!=null">
+            <if test="orItems.size()>0">
+                And
+                <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                    (${item.field} ${item.oper} #{item.value})
+                </foreach>
+            </if>
+        </if>
+        <if test="andItems!=null">
+            <if test="andItems.size()>0">
+                And
+                <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                    (${item.field} ${item.oper} #{item.value})
+                </foreach>
+            </if>
+        </if>
+        ) t where t.RowNum BETWEEN
+        #{Begin} And #{End}
+    </select>
+    <select id="getData" resultType="map">
+        Select * from (
+        select *,row_number() over(ORDER by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum
+        from View_ClientInfo
+        <where>
+            1=1
+            <if test="Type!=null and Type!=''">
+                And cootype=#{Type}
+            </if>
+            <if test="RoleName!='系统管理员'">
+                and dbo.fn_auth_client_signman(#{UserID},#{RoleName},#{DepID},SignMan)=1
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>
+        )t Where RowNum BETWEEN #{Begin} And #{End}
+    </select>
+    <select id="getJSR" resultType="map">
+        Select ClientID as ID,Name from tbClient Where ClientID!=#{ID} And ClientID in(Select ClientID from(select
+        a.ClientID,a.SignMan from tbClient a left join
+      (select ClientID from FollowRecord where  ClientID>0) b on a.ClientID=b.ClientID) vt
+      where dbo.fn_auth_client_signman(#{UserID},#{RoleName},#{DepID},SignMan)=1) Order by CreateTime Desc
+    </select>
+    <select id="getClientTree" resultType="com.zhide.dtsystem.models.tbClient">
+        Select * from tbClient Where 1=1
+        <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+            and dbo.fn_auth_client_signman(#{UserID},#{RoleName},#{DepID},SignMan)=1
+        </if>
+    </select>
+    <select id="getLoginClientReords" resultType="map">
+        select * from tbLoginClientRecord where ClientID = #{ClientID}
+    </select>
+    <select id="getDLF" resultType="map">
+        SELECT * from View_ClientDaiMoney Where ClientID=${ClientID} Order by CreateTime desc
+    </select>
+    <select id="getGF" resultType="map">
+        Select * from  View_ClientGuanMoney Where ClientID=${ClientID}  Order by CreateTime desc
+    </select>
+    <select id="getInvoice" resultType="map">
+        select * from tbInvoiceApplication where ClientID = #{ClientID}
+    </select>
+    <select id="findNameByName" resultType="tbClient">
+        Select top 1 * from tbClient Where Name=#{name}
+    </select>
+    <select id="getAllClient" resultType="map">
+        Select  * from tbClient
+    </select>
+    <insert id="addImportExcelReturnClientID" useGeneratedKeys="true" keyProperty="clientID"
+            parameterType="com.zhide.dtsystem.models.tbClient">
+        INSERT INTO tbClient(Name,Type,SignMan,SignDate,OrgCode,cootype,CreateTime,CreateMan,CanUse) VALUES(#{name},#{type},#{signMan},#{signDate},#{orgCode},#{cootype},#{createTime},#{createMan},0)
+    </insert>
+    <select id="getAllClientInfoExistLinkMan" resultType="map">
+        Select '0' as PID,'X'+convert(varchar,ClientID) as FID,convert(varchar,ClientID) as Code,Name,null as Email
+        from
+        tbClient
+        Where  1=1  And ClientID in(Select Distinct ClientID from tbClientLinkers)
+        <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+            and dbo.fn_auth_client_signman(#{UserID},#{RoleName},#{DepID},SignMan)=1
+        </if>
+        Union
+        Select 'X'+convert(varchar,a.ClientID) as PID,convert(varchar,LinkID) as FID, a.LinkMan as Code,a.Mobile as
+        Name,a.Email
+        from tbClientLinkers a  inner join tbClient b on a.ClientID=b.ClientID Where 1=1
+        <if test="RoleName!='系统管理员' and RoleName.indexOf('流程')==-1 and RoleName.indexOf('财务')==-1">
+            and dbo.fn_auth_client_signman(#{UserID},#{RoleName},#{DepID},b.SignMan)=1
+        </if>
+    </select>
+</mapper>

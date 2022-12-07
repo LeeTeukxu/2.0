@@ -1,0 +1,20 @@
+@charset "utf-8";
+/* CSS Document */
+
+/*css 重置*/
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img { margin:0; padding:0; }  /*让这些的标签内外边距都是0*/
+fieldset, img { border:none;  }
+img{display: block;} 
+ul, ol { list-style:none; }
+input { padding-top:0; padding-bottom:0; font-family: "SimSun","宋体";}
+select, input { vertical-align:middle; }
+select, input, textarea { font-size:12px; margin:0; }
+textarea { resize:none; }
+table { border-collapse:collapse; }
+ body { color:#333; font:12px/20px "SimSun","宋体","Arial Narrow",HELVETICA; background:#fff; }
+.clearfix:after { content:"."; display:block; height:0; visibility:hidden; clear:both; }
+.clearfix { zoom:1; }
+.clearit { clear:both; height:0; font-size:0; overflow:hidden; }
+a { color:#666; text-decoration:none; }
+ a:visited { color:#666; }
+a:hover, a:active, a:focus { color:#fff; text-decoration:none; }

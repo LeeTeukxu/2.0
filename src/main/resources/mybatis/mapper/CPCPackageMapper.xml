@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhide.dtsystem.mapper.CPCPackageMapper">
+    <select id="getData" resultType="map">
+        Select * from (
+        select *,row_number() over(ORDER  by ${sortField} ${sortOrder}) as RowNum,Count(1) over() as _TotalNum
+        from View_CPCPackageMainBrowse
+        <where>
+            1=1
+            <if test="State!=null and State!=''">
+                And State =#{State}
+            </if>
+            <if test="orItems!=null">
+                <if test="orItems.size()>0">
+                    And
+                    <foreach collection="orItems" open="(" close=")" separator=" OR " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+            <if test="andItems!=null">
+                <if test="andItems.size()>0">
+                    And
+                    <foreach collection="andItems" open="(" close=")" separator=" And " item="item">
+                        (${item.field} ${item.oper} #{item.value})
+                    </foreach>
+                </if>
+            </if>
+        </where>)t Where RowNum BETWEEN  #{Begin} And #{End}
+    </select>
+    <select id="getCPCFiles" resultType="map">
+        Select a.AttID, a.Type ,a.Code,a.SubID,b.Size,b.UploadTime as CreateTime ,c.EmpName as
+            CreateMan,a.Code+a.ExtName as Name,a.Pages
+        from
+            CPCFiles a
+                inner join tbAttachment b on a.AttID=b.GUID
+                inner join v_LoginUser c on b.UploadMan=c.UserID
+        Where a.MainID=#{MainID}
+    </select>
+    <select id="getInventors" resultType="map">
+        Select ID,[Name],NotOpen,[First],SubID,MainID,CreateTime,CreateMan,Code,Country  from CPCInventor Where
+            MainID=#{MainID}
+    </select>
+    <select id="getApplyMan" resultType="map">
+        Select * from CPCApplyMan Where MainID=#{MainID}
+    </select>
+    <select id="getAgents" resultType="map">
+        Select * from CPCAgent Where MainID=#{MainID}
+    </select>
+    <select id="getCompanyInfo"  resultType="map">
+        Select * from tbCompany
+    </select>
+    <select id="getAgentInfo"  resultType="map">
+        select * from tbAgents
+    </select>
+</mapper>
